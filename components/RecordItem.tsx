@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Record } from '@/types/Record';
 import deleteRecord from '@/app/actions/deleteRecord';
 
@@ -25,18 +25,25 @@ const getCategoryEmoji = (category: string) => {
 
 const RecordItem = ({ record }: { record: Record }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [clientDate, setClientDate] = useState('');
+
+  // Set date on client to avoid hydration mismatch
+  useEffect(() => {
+    if (record?.date) {
+      setClientDate(new Date(record.date).toLocaleDateString());
+    }
+  }, [record?.date]);
 
   const handleDeleteRecord = async (recordId: string) => {
-    setIsLoading(true); // Show loading spinner
-    await deleteRecord(recordId); // Perform delete operation
-    setIsLoading(false); // Hide loading spinner
+    setIsLoading(true);
+    await deleteRecord(recordId);
+    setIsLoading(false);
   };
 
-  // Determine border color based on expense amount
   const getBorderColor = (amount: number) => {
-    if (amount > 100) return 'border-red-500'; // High expense
-    if (amount > 50) return 'border-yellow-500'; // Medium expense
-    return 'border-green-500'; // Low expense
+    if (amount > 100) return 'border-red-500';
+    if (amount > 50) return 'border-yellow-500';
+    return 'border-green-500';
   };
 
   return (
@@ -45,14 +52,14 @@ const RecordItem = ({ record }: { record: Record }) => {
         record?.amount
       )} hover:bg-white/80 dark:hover:bg-gray-700/80 relative min-h-[120px] sm:min-h-[140px] flex flex-col justify-between overflow-visible group`}
     >
-      {/* Delete button positioned absolutely in top-right corner */}
+      {/* Delete button */}
       <button
         onClick={() => handleDeleteRecord(record.id)}
         className={`absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-full w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center shadow-lg hover:shadow-xl border-2 border-white dark:border-gray-700 backdrop-blur-sm transform hover:scale-110 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200 ${
           isLoading ? 'cursor-not-allowed scale-100' : ''
         }`}
         aria-label='Delete record'
-        disabled={isLoading} // Disable button while loading
+        disabled={isLoading}
         title='Delete expense record'
       >
         {isLoading ? (
@@ -75,12 +82,12 @@ const RecordItem = ({ record }: { record: Record }) => {
         )}
       </button>
 
-      {/* Content area with proper spacing */}
+      {/* Content */}
       <div className='flex-1 flex flex-col justify-between'>
         <div className='space-y-2 sm:space-y-3'>
           <div className='flex items-center justify-between'>
             <span className='text-xs font-medium text-gray-500 dark:text-gray-400 tracking-wide uppercase'>
-              {new Date(record?.date).toLocaleDateString()}
+              {clientDate}
             </span>
             <span className='text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100'>
               ${record?.amount.toFixed(2)}
