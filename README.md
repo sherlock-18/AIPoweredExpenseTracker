@@ -1,6 +1,6 @@
 # 💰 Kharch-AI Powered Expense Tracker
 
-A modern, AI-powered expense tracking web application built with Next.js 15, featuring intelligent categorization, real-time analytics, and personalized financial insights.
+A modern, AI-powered expense tracking web application built with Next.js, featuring intelligent categorization, real-time analytics, and personalized financial insights.
 
 ## ✨ Features
 
